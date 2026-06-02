@@ -1,60 +1,151 @@
-# swift-iterator-primitives
+# Iterator Primitives
 
-Single-pass iteration as a Swift Institute codec-triple application — `Iterator.\`Protocol\`` for the agent, `Iterate<Element, Failure>` for the type-erased witness, `Iterable` for the capability attachment.
+![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+[![CI](https://github.com/swift-primitives/swift-iterator-primitives/actions/workflows/ci.yml/badge.svg)](https://github.com/swift-primitives/swift-iterator-primitives/actions/workflows/ci.yml)
 
-## The codec-triple application
+Single-pass iteration in three composable pieces: a protocol you conform to (`Iterator.Protocol`), a closure-backed type-erased witness (`Iteration`), and an attachable capability (`Iterable`) that gives any container `forEach` / `reduce` / `first` / `contains` / `allSatisfy`.
 
-| Role | Identifier | Purpose |
-|---|---|---|
-| Agent namespace + protocol | `enum Iterator` + `Iterator.\`Protocol\`<Element, Failure>` | "Acts as an iterator." Stateful single-pass cursor with typed throws. |
-| Witness | `Iterate<Element, Failure>` | Top-level closure-backed type-erased iterator value. |
-| Attachable | `Iterable` | A type that vends a canonical iterator via `makeIterator()`. |
-| Concrete iterators | `Iterator.Empty`, `Iterator.Once`, `Iterator.Repeating` | Standard building blocks. |
+Unlike the standard library's `IteratorProtocol`, the element and the iterator itself may be `~Copyable` and `~Escapable`, and failure is a typed-throws `Failure` rather than `any Error` — this is the move-only, typed iterator the stdlib can't express.
 
-## Witness naming — method-stem divergence
+---
 
-The witness is named `Iterate` (verb form of the agent name `Iterator`), not `Next` (the protocol's method name). This is the codec-triple's documented exception for agents whose method name doesn't share a stem with the agent name. See `agent-witness-attachable-pattern.md` §3.
+## Key Features
 
-## Architectural placement — foundation, not nested
+- **Move-only iteration** — `Iterator.Protocol` admits `~Copyable & ~Escapable` conformers *and* `~Copyable & ~Escapable` elements; `next()` returns `Element?` under `@_lifetime(&self)`. The stdlib `IteratorProtocol` requires `Copyable` throughout.
+- **Typed-throws failure** — the protocol carries a `Failure` type, so a failable iterator surfaces its precise error type at compile time instead of erasing to `any Error`.
+- **Type-erased witness** — `Iteration<Element, Failure>` (canonically `Iterator.Witness`) wraps any closure, or any `Copyable` source iterator, into a single value.
+- **Attachable terminals** — conform a container to `Iterable` with one `makeIterator()` and get `forEach`, `reduce(into:)`, `first(where:)`, `contains(where:)`, and `allSatisfy(_:)` for free; a multipass container can serve several terminals non-destructively.
+- **Trivial iterators** — `Once<Element>` (one owned element, move-only) and `Empty<Element>` (zero elements), plus `Iterator.repeating(_:)` for an endlessly-repeated `Copyable` value.
 
-`swift-iterator-primitives` is an **atomic peer package** to (the future) `swift-sequencer-primitives`, not nested under it. Sequence is defined in terms of Iterator (`makeIterator() -> Iterator`); Iterator references nothing about Sequence. The dependency is strict and one-way: Sequence → Iterator. Nesting iterator under sequencer would invert the real conceptual direction.
+---
 
-See pattern doc §12.8 case 5 for the principle: when a noun-namespace's contents form a coherent foundation-layer concept that a derived agent depends on, the foundation gets its own package, not nested membership.
+## Quick Start
 
-## Maximum `~Copyable` / `~Escapable` support
-
-The protocol admits maximally permissive conformers:
-
-- `Iterator.\`Protocol\``: `~Copyable, ~Escapable` Self
-- `Element`: `~Copyable & ~Escapable`
-- `next()`: returns `Element?` with `@_lifetime(&self)` to admit `~Escapable` elements
-
-`Iterator.Empty<Element>` is the most permissive concrete iterator (no element storage; both `~Copyable, ~Escapable`).
-
-The `Iterate<Element, Failure>` witness is closure-backed and therefore limited to Copyable + Escapable `Element` (current Swift closure-capture limitation). Iterators yielding move-only or non-escaping elements should conform to `Iterator.\`Protocol\`` directly rather than going through `Iterate`.
-
-`Iterator.Once<Element>` and `Iterator.Repeating<Element>` are Copyable-element types for v0; widening Once to `~Copyable & ~Escapable` Element awaits stabilization of Swift's noncopyable enum-state-machine patterns.
-
-## Getting started
+Conform a type to the iterator protocol — it works for move-only `Self` and elements:
 
 ```swift
-.package(path: "../swift-iterator-primitives")
+import Iterator_Primitives
+
+struct Countdown: Iterator.`Protocol` {
+    var n: Int
+    mutating func next() -> Int? {
+        guard n > 0 else { return nil }
+        defer { n -= 1 }
+        return n
+    }
+}
+
+var c = Countdown(n: 3)
+c.next()   // 3
+c.next()   // 2
 ```
 
-Then in a target's dependencies:
+Erase any closure — or any `Copyable` iterator — into one witness value, and repeat a value forever:
 
 ```swift
-.product(name: "Iterator Primitives", package: "swift-iterator-primitives")
+var values = [1, 2, 3]
+var iter = Iteration<Int, Never> {
+    values.isEmpty ? nil : values.removeFirst()
+}
+iter.next()   // 1
+iter.next()   // 2
+
+var sevens = Iterator.repeating(7)
+sevens.next() // 7  (forever)
 ```
 
-Or import specific sub-targets:
+Make a container `Iterable` with one method and get terminals for free:
 
 ```swift
-import Iterator_Protocol  // just the protocol
-import Iterate            // the witness
-import Iterator_Empty_Primitives  // just the Empty concrete iterator
+import Iterator_Chunk_Primitives
+
+struct IntSource: Iterable {
+    let values: [Int]
+    // Inside an `Iterable`, `Iterator` is the protocol's associated type,
+    // so the span-backed chunk iterator is module-qualified:
+    @_lifetime(borrow self)
+    borrowing func makeIterator() -> Iterator_Chunk_Primitives.Iterator.Chunk<Int> {
+        Iterator_Chunk_Primitives.Iterator.Chunk(values.span)
+    }
+}
+
+let source = IntSource(values: [1, 2, 3, 4])
+source.contains { $0 > 3 }            // true
+source.first { $0 > 2 }               // 3
+source.reduce(into: 0) { $0 += $1 }   // 10
 ```
+
+---
+
+## Installation
+
+Add the dependency to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/swift-primitives/swift-iterator-primitives.git", branch: "main")
+]
+```
+
+Add the umbrella product to your target:
+
+```swift
+.target(
+    name: "App",
+    dependencies: [
+        .product(name: "Iterator Primitives", package: "swift-iterator-primitives")
+    ]
+)
+```
+
+Or depend on a narrower product (e.g. `Iterator Protocol` for just the protocol, `Iterator Witness Primitives` for the witness) — see Architecture.
+
+Requires Swift 6.3.1 and macOS 26 / iOS 26 / tvOS 26 / watchOS 26 / visionOS 26 (or the corresponding Linux / Windows toolchain).
+
+---
+
+## Architecture
+
+| Product | Contents | When to import |
+|---------|----------|----------------|
+| `Iterator Primitives` | Umbrella — protocol, witness, `Iterable` + terminals, `Once`, repetition | Most consumers |
+| `Iterator Protocol` | `Iterator.Protocol` (alias `Iterating`) — the agent protocol only | Conforming a custom iterator with no other surface |
+| `Iterator Witness Primitives` | `Iteration` / `Iterator.Witness` type-erased witness + `Iterator.repeating(_:)` | Type-erasing closures or `Copyable` iterators |
+| `Iterable` | The `Iterable` attachable + terminals (`forEach` / `reduce` / `first` / `contains` / `allSatisfy`) | Adding terminals to a container |
+| `Iterator Once Primitives` | `Once<Element>` — the one-element owned iterator | The single-element case |
+| `Iterator Chunk Primitives` | `Iterator.Chunk` — a `Span`-backed bulk iterator | Iterating over a `Span` |
+| `Iterator Primitive` | The bare `Iterator` namespace enum | Namespace only (rare) |
+| `Iterator Primitives Test Support` | Re-exports for downstream test targets | Test target only |
+
+`Iterable` defines a container in terms of `Iterator.Protocol` (`makeIterator()`); the dependency is strictly one-way, so iteration carries no knowledge of any sequence or collection layer above it.
+
+---
+
+## Platform Support
+
+| Platform         | CI  | Status       |
+|------------------|-----|--------------|
+| macOS 26         | Yes | Full support |
+| Linux            | Yes | Full support |
+| Windows          | Yes | Full support |
+| iOS/tvOS/watchOS | —   | Supported    |
+| Swift Embedded   | —   | Supported    |
+
+---
+
+## Related Packages
+
+- [`swift-either-primitives`](https://github.com/swift-primitives/swift-either-primitives) — `Either`, used by the `Iterable` terminals.
+- [`swift-cardinal-primitives`](https://github.com/swift-primitives/swift-cardinal-primitives) — `Cardinal`, the counting type used in the bulk-iteration tier.
+- [`swift-carrier-primitives`](https://github.com/swift-primitives/swift-carrier-primitives) — `Carrier`, backing the span-based `Iterator.Chunk`.
+
+---
+
+## Community
+
+<!-- BEGIN: discussion -->
+<!-- END: discussion -->
 
 ## License
 
-Apache 2.0.
+Apache 2.0. See [LICENSE.md](LICENSE.md).

@@ -1,0 +1,12 @@
+# SwiftLint configuration
+# Inherits from the shared parent configuration in swift-standards
+
+parent_config: https://raw.githubusercontent.com/swift-primitives/.github/main/.swiftlint.yml
+
+# Package-specific overrides
+disabled_rules:
+  - function_parameter_count
+  # empty_count false-positives on the institute's typed-count metadata idiom
+  # (e.g. `Words.count == 0`, where the type is not a Collection — no `isEmpty`).
+  # Relaxed per principal decision 2026-06-02 (swiftlint can't type-check the receiver).
+  - empty_count

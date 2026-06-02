@@ -26,8 +26,8 @@ let package = Package(
 
         // MARK: - Witness
         .library(
-            name: "Iterate",
-            targets: ["Iterate"]
+            name: "Iterator Witness Primitives",
+            targets: ["Iterator Witness Primitives"]
         ),
 
         // MARK: - Attachable
@@ -38,16 +38,14 @@ let package = Package(
 
         // MARK: - Concrete Iterators
         .library(
-            name: "Iterator Empty Primitives",
-            targets: ["Iterator Empty Primitives"]
-        ),
-        .library(
             name: "Iterator Once Primitives",
             targets: ["Iterator Once Primitives"]
         ),
+
+        // MARK: - Bulk tier
         .library(
-            name: "Iterator Repeating Primitives",
-            targets: ["Iterator Repeating Primitives"]
+            name: "Iterator Chunk Primitives",
+            targets: ["Iterator Chunk Primitives"]
         ),
 
         // MARK: - Umbrella
@@ -62,7 +60,11 @@ let package = Package(
             targets: ["Iterator Primitives Test Support"]
         ),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/swift-primitives/swift-carrier-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-cardinal-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-either-primitives.git", branch: "main"),
+    ],
     targets: [
         // MARK: - Namespace
         .target(
@@ -80,7 +82,7 @@ let package = Package(
 
         // MARK: - Witness
         .target(
-            name: "Iterate",
+            name: "Iterator Witness Primitives",
             dependencies: [
                 "Iterator Protocol",
             ]
@@ -91,26 +93,29 @@ let package = Package(
             name: "Iterable",
             dependencies: [
                 "Iterator Protocol",
+                "Iterator Chunk Primitives",
+                .product(name: "Either Primitives", package: "swift-either-primitives"),
+                .product(name: "Cardinal Primitives", package: "swift-cardinal-primitives"),
             ]
         ),
 
         // MARK: - Concrete Iterators
-        .target(
-            name: "Iterator Empty Primitives",
-            dependencies: [
-                "Iterator Protocol",
-            ]
-        ),
         .target(
             name: "Iterator Once Primitives",
             dependencies: [
                 "Iterator Protocol",
             ]
         ),
+
+        // MARK: - Bulk tier
         .target(
-            name: "Iterator Repeating Primitives",
+            name: "Iterator Chunk Primitives",
             dependencies: [
+                "Iterator Primitive",
                 "Iterator Protocol",
+                .product(name: "Carrier Primitives", package: "swift-carrier-primitives"),
+                .product(name: "Cardinal Primitives", package: "swift-cardinal-primitives"),
+                .product(name: "Cardinal Primitives Standard Library Integration", package: "swift-cardinal-primitives"),
             ]
         ),
 
@@ -120,11 +125,10 @@ let package = Package(
             dependencies: [
                 "Iterator Primitive",
                 "Iterator Protocol",
-                "Iterate",
+                "Iterator Witness Primitives",
                 "Iterable",
-                "Iterator Empty Primitives",
                 "Iterator Once Primitives",
-                "Iterator Repeating Primitives",
+                "Iterator Chunk Primitives",
             ]
         ),
 
@@ -139,11 +143,7 @@ let package = Package(
 
         // MARK: - Tests
         .testTarget(
-            name: "Iterate Tests",
-            dependencies: ["Iterator Primitives Test Support"]
-        ),
-        .testTarget(
-            name: "Iterator Empty Primitives Tests",
+            name: "Iteration Tests",
             dependencies: ["Iterator Primitives Test Support"]
         ),
         .testTarget(
@@ -151,7 +151,11 @@ let package = Package(
             dependencies: ["Iterator Primitives Test Support"]
         ),
         .testTarget(
-            name: "Iterator Repeating Primitives Tests",
+            name: "Iterator Chunk Primitives Tests",
+            dependencies: ["Iterator Primitives Test Support"]
+        ),
+        .testTarget(
+            name: "Iterable Tests",
             dependencies: ["Iterator Primitives Test Support"]
         ),
     ],

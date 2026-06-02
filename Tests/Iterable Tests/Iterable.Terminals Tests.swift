@@ -1,0 +1,51 @@
+import Iterator_Chunk_Primitives
+import Iterator_Primitives_Test_Support
+
+/// A minimal span-primitive `Iterable` fixture: vends a fresh `Iterator.Chunk` over its stored
+/// values' span each call, so iteration is non-destructive (multipass).
+private struct IntSource: Iterable {
+    let values: [Int]
+    @_lifetime(borrow self)
+    borrowing func makeIterator() -> Iterator_Chunk_Primitives.Iterator.Chunk<Int> {
+        Iterator_Chunk_Primitives.Iterator.Chunk(values.span)
+    }
+}
+
+@Suite("Iterable Terminals Tests")
+struct IterableTerminalsTests {
+    @Suite struct Unit {}
+}
+
+extension IterableTerminalsTests.Unit {
+    @Test
+    func `contains(where:) is true at the first match, false when none matches`() {
+        let source = IntSource(values: [1, 2, 3])
+        #expect(source.contains { $0 == 2 })
+        #expect(!source.contains { $0 == 9 })
+    }
+
+    @Test
+    func `first(where:) returns the first match or nil`() {
+        let source = IntSource(values: [1, 2, 3, 4])
+        #expect(source.first { $0 > 2 } == 3)
+        #expect(source.first { $0 > 9 } == nil)
+    }
+
+    @Test
+    func `reduce(into:) folds across every element`() {
+        let source = IntSource(values: [1, 2, 3, 4])
+        let sum = source.reduce(into: 0) { accumulator, element in
+            accumulator += element
+        }
+        #expect(sum == 10)
+    }
+
+    @Test
+    func `terminals are non-destructive — the same container serves several`() {
+        let source = IntSource(values: [5, 6, 7])
+        #expect(source.contains { $0 == 6 })
+        #expect(source.first { $0 > 5 } == 6)
+        let sum = source.reduce(into: 0) { $0 += $1 }
+        #expect(sum == 18)
+    }
+}

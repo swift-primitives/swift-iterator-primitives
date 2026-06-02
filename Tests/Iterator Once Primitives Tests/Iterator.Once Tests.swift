@@ -1,5 +1,11 @@
 import Iterator_Primitives_Test_Support
 
+/// A move-only element exercising the `~Copyable` element support of `Iterator.Once`.
+private struct Token: ~Copyable {
+    let id: Int
+    init(_ id: Int) { self.id = id }
+}
+
 @Suite("Iterator.Once Tests")
 struct IteratorOnceTests {
     @Suite struct Unit {}
@@ -20,5 +26,24 @@ extension IteratorOnceTests.Unit {
         #expect(iter.next() == nil)
         #expect(iter.next() == nil)
         #expect(iter.next() == nil)
+    }
+
+    @Test
+    func `once iterator supports a move-only element`() {
+        var iter = Iterator.Once(Token(7))
+
+        var firstID: Int? = nil
+        switch iter.next() {
+        case .some(let token): firstID = token.id
+        case .none: break
+        }
+        #expect(firstID == 7)
+
+        var exhausted = false
+        switch iter.next() {
+        case .some: break
+        case .none: exhausted = true
+        }
+        #expect(exhausted)
     }
 }
