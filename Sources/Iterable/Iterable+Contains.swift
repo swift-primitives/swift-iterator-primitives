@@ -4,7 +4,7 @@
 //
 //  Non-destructive existence terminal on the multipass attachable.
 //
-//  Span-primitive (SE-0516): drives the bulk `next(maximumCount:) -> Span<Element>` loop, offering
+//  Span-primitive (SE-0516): drives the bulk `next(maximumCount:) -> Swift.Span<Element>` loop, offering
 //  each element to `predicate` via the borrowing addressor `span[i]` — so move-only and
 //  non-escaping element types work (no Copyable gate).
 //
@@ -58,7 +58,7 @@ extension Iterable where Self: ~Copyable & ~Escapable {
     ) throws(Either<E, Iterator.Failure>) -> Bool {
         var iterator = makeIterator()
         while true {
-            let span: Span<Iterator.Element>
+            let span: Swift.Span<Iterator.Element>
             do { span = try iterator.next(maximumCount: Cardinal(UInt.max)) } catch { throw Either.right(error) }
             if span.isEmpty { return false }
             for i in span.indices {

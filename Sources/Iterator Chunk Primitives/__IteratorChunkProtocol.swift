@@ -25,7 +25,7 @@ public import Cardinal_Primitives
 ///
 /// **Span-primitive** (the SE-0516 `BorrowingIteratorProtocol` analog): `next(maximumCount:)` is
 /// the *sole* element-access primitive — there is no scalar move-out `next() -> Element?`. Because
-/// `Span<Element: ~Copyable>` exists and `Span`'s subscript is a *borrowing addressor* (`span[i]`
+/// `Swift.Span<Element: ~Copyable>` exists and `Span`'s subscript is a *borrowing addressor* (`span[i]`
 /// borrows, never moves out), one bulk iterator serves **both** element kinds.
 ///
 /// The element bound is `~Copyable`, NOT the over-narrow `Escapable`: `Span` admits `~Copyable`
@@ -56,7 +56,7 @@ public protocol __IteratorChunkProtocol<Element, Failure>: ~Copyable, ~Escapable
     @_lifetime(&self)
     mutating func next(
         maximumCount: some Carrier.`Protocol`<Cardinal>
-    ) throws(Failure) -> Span<Element>
+    ) throws(Failure) -> Swift.Span<Element>
 
     /// Skip up to `maximumOffset` elements; returns the number actually skipped (SE-0516 `skip(by:)`).
     ///

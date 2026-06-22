@@ -36,7 +36,7 @@ public protocol Iterable: ~Copyable, ~Escapable {
     /// The iterator type this instance produces — the **span-primitive** bulk iterator
     /// (`__IteratorChunkProtocol`, the SE-0516 `BorrowingIteratorProtocol` analog), NOT the scalar
     /// `Iterator.`Protocol``. Its sole element-access primitive is
-    /// `next(maximumCount:) -> Span<Element>`; because `Span<Element: ~Copyable>`'s subscript is a
+    /// `next(maximumCount:) -> Swift.Span<Element>`; because `Swift.Span<Element: ~Copyable>`'s subscript is a
     /// borrowing addressor, one iterator serves **both** element kinds (`span[i]` borrows, never
     /// moves out) — which dissolves the move-out wall that previously forced a scalar primitive.
     ///

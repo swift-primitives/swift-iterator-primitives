@@ -4,7 +4,7 @@
 //
 //  Non-destructive lookup terminal on the multipass attachable.
 //
-//  Span-primitive (SE-0516): drives the bulk `next(maximumCount:) -> Span<Element>` loop. The
+//  Span-primitive (SE-0516): drives the bulk `next(maximumCount:) -> Swift.Span<Element>` loop. The
 //  matched element is copied out of the borrowed span and returned by value, so this terminal
 //  keeps its `Element: Copyable & Escapable` gate — that gate is intrinsic to *extracting* an
 //  element past the borrow, NOT to iteration.
@@ -66,7 +66,7 @@ where Self: ~Copyable & ~Escapable, Iterator.Element: Copyable & Escapable {
     ) throws(Either<E, Iterator.Failure>) -> Iterator.Element? {
         var iterator = makeIterator()
         while true {
-            let span: Span<Iterator.Element>
+            let span: Swift.Span<Iterator.Element>
             do { span = try iterator.next(maximumCount: Cardinal(UInt.max)) } catch { throw Either.right(error) }
             if span.isEmpty { return nil }
             for i in span.indices {

@@ -11,7 +11,7 @@ extension Iterator {
     /// Presents a scalar generator as a bulk iterator, lending one materialised element per step.
     ///
     /// The span-primitive adapter for **generators** — scalar iterators that compute or sparse-yield
-    /// their elements and therefore have no contiguously-stored `Span<Element>` to project (bit
+    /// their elements and therefore have no contiguously-stored `Swift.Span<Element>` to project (bit
     /// vectors, `Single`, cyclic groups, hash occupancy, …). The institute analog of SE-0516's
     /// `BorrowingIteratorAdapter`: it wraps a scalar `Iterator.`Protocol`` and presents it as a bulk
     /// `__IteratorChunkProtocol` by materialising **one** element per step into an owned reused slot
@@ -53,7 +53,7 @@ extension Iterator {
         @_lifetime(&self)
         public mutating func next(
             maximumCount: some Carrier.`Protocol`<Cardinal>
-        ) throws(Source.Failure) -> Span<Source.Element> {
+        ) throws(Source.Failure) -> Swift.Span<Source.Element> {
             if let value = try source.next() {
                 if slot.isEmpty { slot.append(value) } else { slot[0] = value }
                 return slot.span.extracting(first: 1)

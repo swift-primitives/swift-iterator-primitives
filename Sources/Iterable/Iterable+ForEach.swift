@@ -16,7 +16,7 @@
 //  iterables (cursors), which Property cannot (Property requires an Escapable Base).
 //
 //  Span-primitive (SE-0516): the iterator's sole element-access is the bulk
-//  `next(maximumCount:) -> Span<Element>`; `forEach` drives the span loop and lends each
+//  `next(maximumCount:) -> Swift.Span<Element>`; `forEach` drives the span loop and lends each
 //  element via the borrowing addressor `span[i]` — carrying both Copyable and `~Copyable`
 //  elements with no Copyable gate (the span addressor borrows, never moves out).
 //
@@ -75,7 +75,7 @@ extension Iterable where Self: ~Copyable & ~Escapable {
     ) throws(Either<E, Iterator.Failure>) {
         var iterator = makeIterator()
         while true {
-            let span: Span<Iterator.Element>
+            let span: Swift.Span<Iterator.Element>
             do {
                 span = try iterator.next(maximumCount: Cardinal(UInt.max))
             } catch {
