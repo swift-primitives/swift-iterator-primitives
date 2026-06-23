@@ -17,7 +17,7 @@ extension Iterator {
     /// The tier is named for its *manner* (`Chunk` — it yields elements in bounded contiguous
     /// chunks, i.e. successive sub-spans), not its *payload* (`Span`, which would shadow
     /// `Swift.Span`) and not the storage *subject* (`Contiguous` — that word belongs to the
-    /// memory subject `Memory.Contiguous`), per `operation-domain-naming-and-organization.md`
+    /// storage subject `Storage.Contiguous`), per `operation-domain-naming-and-organization.md`
     /// §7 / `[API-NAME-001b]`.
     ///
     /// (The bulk *protocol* is the top-level `__IteratorChunkProtocol`, not
