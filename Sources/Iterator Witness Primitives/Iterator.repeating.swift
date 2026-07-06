@@ -15,6 +15,6 @@ extension Iterator {
     /// For a single move-only or non-escaping element, use `Iterator.Once` directly.
     @inlinable
     public static func repeating<Element>(_ element: Element) -> Iterator.Witness<Element, Never> {
-        Iterator.Witness<Element, Never> { element }
+        Self.Witness<Element, Never> { element }
     }
 }
