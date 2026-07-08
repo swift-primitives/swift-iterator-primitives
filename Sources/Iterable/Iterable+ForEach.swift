@@ -76,14 +76,14 @@ extension Iterable where Self: ~Copyable & ~Escapable {
         var iterator = makeIterator()
         while true {
             let span: Swift.Span<Iterator.Element>
-            do {
+            do throws(Iterator.Failure) {
                 span = try iterator.next(maximumCount: Cardinal(UInt.max))
             } catch {
                 throw Either.right(error)
             }
             if span.isEmpty { return }
             for i in span.indices {
-                do {
+                do throws(E) {
                     try body(span[i])
                 } catch {
                     throw Either.left(error)

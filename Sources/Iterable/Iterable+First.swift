@@ -67,11 +67,11 @@ where Self: ~Copyable & ~Escapable, Iterator.Element: Copyable & Escapable {
         var iterator = makeIterator()
         while true {
             let span: Swift.Span<Iterator.Element>
-            do { span = try iterator.next(maximumCount: Cardinal(UInt.max)) } catch { throw Either.right(error) }
+            do throws(Iterator.Failure) { span = try iterator.next(maximumCount: Cardinal(UInt.max)) } catch { throw Either.right(error) }
             if span.isEmpty { return nil }
             for i in span.indices {
                 let element = span[i]
-                do {
+                do throws(E) {
                     if try predicate(element) { return element }
                 } catch {
                     throw Either.left(error)
