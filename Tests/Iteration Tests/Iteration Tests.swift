@@ -9,6 +9,9 @@ import Iterator_Primitives_Test_Support
 private struct CountingIterator: Iterator.`Protocol` {
     var n: Int
     init(upTo n: Int) { self.n = n }
+}
+
+extension CountingIterator {
     mutating func next() -> Int? {
         guard n > 0 else { return nil }
         defer { n -= 1 }

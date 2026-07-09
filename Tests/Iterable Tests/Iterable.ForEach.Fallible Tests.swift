@@ -41,6 +41,9 @@ extension FailingChunk: __IteratorChunkProtocol {
 private struct FailingSource: Iterable {
     let values: [Int]
     let failAt: Int
+}
+
+extension FailingSource {
     @_lifetime(borrow self)
     borrowing func makeIterator() -> FailingChunk {
         FailingChunk(values.span, failAt: failAt)
@@ -58,7 +61,7 @@ extension IterableForEachFallibleTests.Unit {
         let source = FailingSource(values: [10, 20, 30], failAt: 2)
         var seen: [Int] = []
         var isRight = false
-        do {
+        do throws(Either<Never, SourceError>) {
             try source.forEach { seen.append($0) }
         } catch {
             // error: Either<Never, SourceError> — the fallible overload was selected.
@@ -74,7 +77,7 @@ extension IterableForEachFallibleTests.Unit {
         let source = FailingSource(values: [10, 20, 30], failAt: 99)  // iterator never fails
         var seen: [Int] = []
         var isLeft = false
-        do {
+        do throws(Either<Stop, SourceError>) {
             try source.forEach { element throws(Stop) in
                 seen.append(element)
                 if element == 20 { throw Stop.now }
@@ -91,7 +94,7 @@ extension IterableForEachFallibleTests.Unit {
     func `fallible contains surfaces an iterator failure as Either.right`() {
         let source = FailingSource(values: [10, 20, 30], failAt: 1)
         var isRight = false
-        do {
+        do throws(Either<Never, SourceError>) {
             _ = try source.contains { $0 == 99 }
         } catch {
             if case .right = error { isRight = true }

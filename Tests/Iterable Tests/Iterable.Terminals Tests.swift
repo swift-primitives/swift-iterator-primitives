@@ -5,6 +5,9 @@ import Iterator_Primitives_Test_Support
 /// values' span each call, so iteration is non-destructive (multipass).
 private struct IntSource: Iterable {
     let values: [Int]
+}
+
+extension IntSource {
     @_lifetime(borrow self)
     borrowing func makeIterator() -> Iterator_Chunk_Primitives.Iterator.Chunk<Int> {
         Iterator_Chunk_Primitives.Iterator.Chunk(values.span)

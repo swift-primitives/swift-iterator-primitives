@@ -6,11 +6,14 @@ import Iterator_Primitives_Test_Support
 /// one) trivially honors the bound, so it needs no count arithmetic — enough to exercise the
 /// protocol and the derived `next()`.
 private struct DripBulk: Iterator.Chunk.`Protocol` {
-    typealias Element = Int
-    typealias Failure = Never
     var storage: [Int]
     var pos: Int = 0
     init(_ storage: [Int]) { self.storage = storage }
+}
+
+extension DripBulk {
+    typealias Element = Int
+    typealias Failure = Never
 
     @_lifetime(&self)
     mutating func next(maximumCount: some Carrier.`Protocol`<Cardinal>) -> Span<Int> {
