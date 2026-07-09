@@ -14,13 +14,12 @@ extension IntSource {
     }
 }
 
-@Suite("Iterable ForEach Tests")
-struct IterableForEachTests {
+@Suite struct `Iterable ForEach Tests` {
     @Suite struct Unit {}
     @Suite struct Canary {}
 }
 
-extension IterableForEachTests.Unit {
+extension `Iterable ForEach Tests`.Unit {
     @Test
     func `forEach visits every element in order`() {
         let source = IntSource(values: [1, 2, 3])
@@ -59,7 +58,7 @@ extension IterableForEachTests.Unit {
     }
 }
 
-extension IterableForEachTests.Canary {
+extension `Iterable ForEach Tests`.Canary {
     /// CI tripwire for the iteration-terminal **surface** decision
     /// (`Research/iterable-iteration-terminal-surface.md`).
     ///

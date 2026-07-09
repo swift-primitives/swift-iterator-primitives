@@ -6,12 +6,11 @@ private struct Token: ~Copyable {
     init(_ id: Int) { self.id = id }
 }
 
-@Suite("Iterator.Once Tests")
-struct IteratorOnceTests {
+@Suite struct `Iterator.Once Tests` {
     @Suite struct Unit {}
 }
 
-extension IteratorOnceTests.Unit {
+extension `Iterator.Once Tests`.Unit {
     @Test
     func `once iterator yields one element then nil`() {
         var iter = Iterator.Once(42)

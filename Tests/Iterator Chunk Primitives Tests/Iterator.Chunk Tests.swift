@@ -24,12 +24,11 @@ extension DripBulk {
     }
 }
 
-@Suite("Iterator.Chunk Tests")
-struct IteratorContiguousTests {
+@Suite struct `Iterator.Chunk Tests` {
     @Suite struct Unit {}
 }
 
-extension IteratorContiguousTests.Unit {
+extension `Iterator.Chunk Tests`.Unit {
     @Test
     func `next yields a borrowed span of the next element`() {
         var iter = DripBulk([10, 20, 30])

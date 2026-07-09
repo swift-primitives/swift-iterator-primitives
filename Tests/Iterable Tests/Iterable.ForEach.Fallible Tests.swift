@@ -50,12 +50,11 @@ extension FailingSource {
     }
 }
 
-@Suite("Iterable ForEach Fallible Tests")
-struct IterableForEachFallibleTests {
+@Suite struct `Iterable ForEach Fallible Tests` {
     @Suite struct Unit {}
 }
 
-extension IterableForEachFallibleTests.Unit {
+extension `Iterable ForEach Fallible Tests`.Unit {
     @Test
     func `an iterator failure surfaces as Either.right`() {
         let source = FailingSource(values: [10, 20, 30], failAt: 2)

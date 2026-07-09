@@ -19,14 +19,13 @@ extension CountingIterator {
     }
 }
 
-@Suite("Iteration Tests")
-struct IterationTests {
+@Suite struct `Iteration Tests` {
     @Suite struct Unit {}
     @Suite struct TypeErasure {}
     @Suite struct Repeating {}
 }
 
-extension IterationTests.Unit {
+extension `Iteration Tests`.Unit {
     @Test
     func `closure-backed iterator yields then exhausts`() {
         var values = [1, 2, 3]
@@ -49,7 +48,7 @@ extension IterationTests.Unit {
     }
 }
 
-extension IterationTests.TypeErasure {
+extension `Iteration Tests`.TypeErasure {
     @Test
     func `wraps a Copyable source iterator`() {
         let source = CountingIterator(upTo: 2)
@@ -61,7 +60,7 @@ extension IterationTests.TypeErasure {
     }
 }
 
-extension IterationTests.Repeating {
+extension `Iteration Tests`.Repeating {
     @Test
     func `repeating factory yields the element forever`() {
         // Iterator.repeating(_:) collapses to the witness — repetition requires Copyable.

@@ -14,12 +14,11 @@ extension IntSource {
     }
 }
 
-@Suite("Iterable Terminals Tests")
-struct IterableTerminalsTests {
+@Suite struct `Iterable Terminals Tests` {
     @Suite struct Unit {}
 }
 
-extension IterableTerminalsTests.Unit {
+extension `Iterable Terminals Tests`.Unit {
     @Test
     func `contains(where:) is true at the first match, false when none matches`() {
         let source = IntSource(values: [1, 2, 3])
