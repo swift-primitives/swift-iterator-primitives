@@ -106,7 +106,7 @@ extension `Iterable ForEach Fallible Tests`.Unit {
         enum Stop: Swift.Error { case now }
         let source = FailingSource(values: [10, 20, 30], failAt: 99)
         var isLeft = false
-        do {
+        do throws(Either<Stop, SourceError>) {
             _ = try source.reduce(into: 0) { accumulator, element in
                 if element == 20 { throw Stop.now }
                 accumulator += element
