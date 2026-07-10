@@ -107,7 +107,7 @@ extension `Iterable ForEach Fallible Tests`.Unit {
         let source = FailingSource(values: [10, 20, 30], failAt: 99)
         var isLeft = false
         do throws(Either<Stop, SourceError>) {
-            _ = try source.reduce(into: 0) { accumulator, element in
+            _ = try source.reduce(into: 0) { (accumulator: inout Int, element: Int) throws(Stop) in
                 if element == 20 { throw Stop.now }
                 accumulator += element
             }
