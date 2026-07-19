@@ -32,7 +32,9 @@ extension Iterator {
         /// The type of value this iterator yields.
         associatedtype Element: ~Copyable & ~Escapable
 
-        /// The error type. Defaults to `Never` for infallible iterators.
+        /// The error type.
+        ///
+        /// Defaults to `Never` for infallible iterators.
         associatedtype Failure: Swift.Error = Never
 
         /// Advance the iterator and return the next element, or `nil` if exhausted.

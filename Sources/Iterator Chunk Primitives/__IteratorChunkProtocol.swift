@@ -40,10 +40,14 @@ public import Cardinal_Primitives
 /// The count parameter is any cardinal carrier (`some Carrier.`Protocol`<Cardinal>`),
 /// matching the ecosystem's count-parameter idiom.
 public protocol __IteratorChunkProtocol<Element, Failure>: ~Copyable, ~Escapable {
-    /// The element kind this iterator lends. `~Copyable` (not `~Escapable` — `Span` excludes it).
+    /// The element kind this iterator lends.
+    ///
+    /// `~Copyable` (not `~Escapable` — `Span` excludes it).
     associatedtype Element: ~Copyable
 
-    /// The error type. Defaults to `Never` for infallible iterators.
+    /// The error type.
+    ///
+    /// Defaults to `Never` for infallible iterators.
     associatedtype Failure: Swift.Error = Never
 
     /// Advance and return up to `maximumCount` elements as a borrowed span.
