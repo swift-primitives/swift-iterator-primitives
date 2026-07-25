@@ -4,7 +4,6 @@ description: "Iterator primitives for Swift — the codec-triple agent, witness,
 topics:
   - primitives
   - iterator
-  - swift
 homepage: "https://swift-institute.org"
 readme:
   family: E
