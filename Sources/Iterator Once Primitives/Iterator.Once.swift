@@ -28,29 +28,31 @@ extension Iterator {
         /// The element has been yielded; iteration is exhausted.
         case done
 
-        /// The error type, `Never` — yielding a stored element cannot fail.
-        public typealias Failure = Never
-
         /// Construct an iterator yielding `element` exactly once.
         @inlinable
         @_lifetime(copy element)
         public init(_ element: consuming Element) {
             self = .pending(element)
         }
+    }
+}
 
-        /// Yield the element on the first call, `nil` on every subsequent call.
-        @inlinable
-        @_lifetime(&self)
-        public mutating func next() -> Element? {
-            switch consume self {
-            case .pending(let element):
-                self = .done
-                return element
+extension Iterator.Once where Element: ~Copyable & ~Escapable {
+    /// The error type, `Never` — yielding a stored element cannot fail.
+    public typealias Failure = Never
 
-            case .done:
-                self = .done
-                return nil
-            }
+    /// Yield the element on the first call, `nil` on every subsequent call.
+    @inlinable
+    @_lifetime(&self)
+    public mutating func next() -> Element? {
+        switch consume self {
+        case .pending(let element):
+            self = .done
+            return element
+
+        case .done:
+            self = .done
+            return nil
         }
     }
 }

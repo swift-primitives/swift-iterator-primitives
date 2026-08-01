@@ -31,12 +31,6 @@ extension Iterator {
         @usableFromInline var source: Source
         @usableFromInline var slot: [Source.Element]
 
-        /// The element kind this iterator lends — the wrapped source's element.
-        public typealias Element = Source.Element
-
-        /// The error type — the wrapped source's failure.
-        public typealias Failure = Source.Failure
-
         /// Wrap a scalar generator.
         ///
         /// The adapter consumes and owns the source iterator.
@@ -46,19 +40,27 @@ extension Iterator {
             self.source = source
             self.slot = []
         }
+    }
+}
 
-        /// Materialise the next scalar element into the owned slot and lend a 1-element span over it;
-        /// an empty span signals exhaustion.
-        @inlinable
-        @_lifetime(&self)
-        public mutating func next(
-            maximumCount: some Carrier.`Protocol`<Cardinal>
-        ) throws(Source.Failure) -> Swift.Span<Source.Element> {
-            if let value = try source.next() {
-                if slot.isEmpty { slot.append(value) } else { slot[0] = value }
-                return slot.span.extracting(first: 1)
-            }
-            return slot.span.extracting(first: 0)
+extension Iterator.Materializing where Source: ~Copyable & ~Escapable, Source.Element: Copyable & Escapable {
+    /// The element kind this iterator lends — the wrapped source's element.
+    public typealias Element = Source.Element
+
+    /// The error type — the wrapped source's failure.
+    public typealias Failure = Source.Failure
+
+    /// Materialise the next scalar element into the owned slot and lend a 1-element span over it;
+    /// an empty span signals exhaustion.
+    @inlinable
+    @_lifetime(&self)
+    public mutating func next(
+        maximumCount: some Carrier.`Protocol`<Cardinal>
+    ) throws(Source.Failure) -> Swift.Span<Source.Element> {
+        if let value = try source.next() {
+            if slot.isEmpty { slot.append(value) } else { slot[0] = value }
+            return slot.span.extracting(first: 1)
         }
+        return slot.span.extracting(first: 0)
     }
 }

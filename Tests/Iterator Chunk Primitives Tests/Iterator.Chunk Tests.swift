@@ -25,6 +25,8 @@ extension DripBulk {
 }
 
 @Suite struct `Iterator.Chunk Tests` {
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
     @Suite struct Unit {}
 }
 

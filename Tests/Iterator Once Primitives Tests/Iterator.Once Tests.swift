@@ -7,6 +7,8 @@ private struct Token: ~Copyable {
 }
 
 @Suite struct `Iterator.Once Tests` {
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
     @Suite struct Unit {}
 }
 

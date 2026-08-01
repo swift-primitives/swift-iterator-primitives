@@ -51,6 +51,8 @@ extension FailingSource {
 }
 
 @Suite struct `Iterable ForEach Fallible Tests` {
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
     @Suite struct Unit {}
 }
 

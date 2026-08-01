@@ -15,6 +15,8 @@ extension IntSource {
 }
 
 @Suite struct `Iterable ForEach Tests` {
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
     @Suite struct Unit {}
     @Suite struct Canary {}
 }

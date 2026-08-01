@@ -15,6 +15,8 @@ extension IntSource {
 }
 
 @Suite struct `Iterable Terminals Tests` {
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
     @Suite struct Unit {}
 }
 

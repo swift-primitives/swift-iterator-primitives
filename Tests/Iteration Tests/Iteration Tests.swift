@@ -21,8 +21,10 @@ extension CountingIterator {
 
 @Suite struct `Iteration Tests` {
     @Suite struct Unit {}
-    @Suite struct TypeErasure {}
+    @Suite struct `Type Erasure` {}
     @Suite struct Repeating {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
 }
 
 extension `Iteration Tests`.Unit {
@@ -48,7 +50,7 @@ extension `Iteration Tests`.Unit {
     }
 }
 
-extension `Iteration Tests`.TypeErasure {
+extension `Iteration Tests`.`Type Erasure` {
     @Test
     func `wraps a Copyable source iterator`() {
         let source = CountingIterator(upTo: 2)
