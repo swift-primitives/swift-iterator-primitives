@@ -43,7 +43,8 @@ extension Iterator {
     }
 }
 
-extension Iterator.Materializing where Source: ~Copyable & ~Escapable, Source.Element: Copyable & Escapable {
+extension Iterator.Materializing
+where Source: ~Copyable & ~Escapable, Source.Element: Copyable & Escapable {
     /// The element kind this iterator lends — the wrapped source's element.
     public typealias Element = Source.Element
 

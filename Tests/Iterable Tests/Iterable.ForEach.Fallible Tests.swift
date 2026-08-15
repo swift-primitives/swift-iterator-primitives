@@ -29,7 +29,9 @@ extension FailingChunk: __IteratorChunkProtocol {
     typealias Failure = SourceError
 
     @_lifetime(&self)
-    mutating func next(maximumCount: some Carrier.`Protocol`<Cardinal>) throws(SourceError) -> Swift.Span<Int> {
+    mutating func next(
+        maximumCount: some Carrier.`Protocol`<Cardinal>
+    ) throws(SourceError) -> Swift.Span<Int> {
         if position == failAt { throw .boom }
         guard position < span.count else { return span.extracting(first: 0) }
         let result = span.extracting(droppingFirst: position).extracting(first: 1)

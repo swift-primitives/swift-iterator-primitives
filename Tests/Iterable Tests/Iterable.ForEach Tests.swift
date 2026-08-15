@@ -72,7 +72,9 @@ extension `Iterable ForEach Tests`.Canary {
     /// When the feature becomes **enabled** in the build, this test fails — prompting a revisit
     /// of the Property-tag surface (and retirement of this canary).
     @Test
-    func `SE-0507 borrow accessors remain unavailable (revisit the Property surface when this fails)`() {
+    func
+        `SE-0507 borrow accessors remain unavailable (revisit the Property surface when this fails)`()
+    {
         #if hasFeature(BorrowAndMutateAccessors)
             Issue.record(
                 """
