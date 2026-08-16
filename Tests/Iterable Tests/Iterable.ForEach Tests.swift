@@ -14,11 +14,29 @@ extension IntSource {
     }
 }
 
+/// A `~Escapable` `Iterable` fixture — a cursor over a borrowed span. This shape is the one the
+/// Property fluent-accessor surface cannot express, because `Property` requires an Escapable base.
+private struct IntCursor: Iterable, ~Escapable {
+    let values: Swift.Span<Int>
+
+    @_lifetime(copy values)
+    init(_ values: Swift.Span<Int>) {
+        self.values = values
+    }
+}
+
+extension IntCursor {
+    @_lifetime(borrow self)
+    borrowing func makeIterator() -> Iterator_Chunk_Primitives.Iterator.Chunk<Int> {
+        Iterator_Chunk_Primitives.Iterator.Chunk(values)
+    }
+}
+
 @Suite struct `Iterable ForEach Tests` {
     @Suite struct `Edge Case` {}
     @Suite struct Integration {}
     @Suite struct Unit {}
-    @Suite struct Canary {}
+    @Suite struct `Escapability` {}
 }
 
 extension `Iterable ForEach Tests`.Unit {
@@ -60,30 +78,24 @@ extension `Iterable ForEach Tests`.Unit {
     }
 }
 
-extension `Iterable ForEach Tests`.Canary {
-    /// CI tripwire for the iteration-terminal **surface** decision
-    /// (`Research/iterable-iteration-terminal-surface.md`).
+extension `Iterable ForEach Tests`.`Escapability` {
+    /// The iteration-terminal **surface** guarantee.
     ///
-    /// While SE-0507 `borrow` accessors (`BorrowAndMutateAccessors`) are unavailable in the
-    /// production compiler, `Iterable`'s iteration terminals are plain `borrowing func`s — the
-    /// Property fluent-accessor surface cannot host iteration, because its base access is a
-    /// `_read` coroutine (statement-scoped) and an iterator can't be held across the loop.
+    /// The SE-0507 canary that previously lived here has been retired: it asserted that
+    /// `borrow` accessors (`BorrowAndMutateAccessors`) were unavailable, and that gate is gone —
+    /// the feature is enabled by default from Swift 6.4, this package's CI release floor.
     ///
-    /// When the feature becomes **enabled** in the build, this test fails — prompting a revisit
-    /// of the Property-tag surface (and retirement of this canary).
+    /// Its retirement does not move the surface to the Property fluent-accessor pattern, because
+    /// the binding constraint was never the accessor kind: `Property<Tag, Base>` requires an
+    /// **Escapable** `Base`, while these terminals are declared on `Self: ~Copyable & ~Escapable`
+    /// and must reach `~Escapable` iterables (cursors). This test guards exactly that capability —
+    /// the one a Property surface would take away.
     @Test
-    func
-        `SE-0507 borrow accessors remain unavailable (revisit the Property surface when this fails)`()
-    {
-        #if hasFeature(BorrowAndMutateAccessors)
-            Issue.record(
-                """
-                SE-0507 borrow accessors (BorrowAndMutateAccessors) are now enabled. The Iterable \
-                iteration-terminal surface can likely move from plain `borrowing func` to the \
-                Property fluent-accessor pattern (Property.Borrow via a `borrow` accessor). \
-                Revisit Research/iterable-iteration-terminal-surface.md and retire this canary.
-                """
-            )
-        #endif
+    func `forEach reaches a ~Escapable iterable`() {
+        let values = [1, 2, 3, 4]
+        var collected: [Int] = []
+        let cursor = IntCursor(values.span)
+        cursor.forEach { collected.append($0) }
+        #expect(collected == [1, 2, 3, 4])
     }
 }
