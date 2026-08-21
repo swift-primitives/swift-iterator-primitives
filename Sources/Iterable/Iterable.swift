@@ -44,6 +44,7 @@ public protocol Iterable: ~Copyable, ~Escapable {
     /// the suppression the associated type would silently require a `Copyable & Escapable` iterator
     /// and reject every move-only iterator in the family.
     associatedtype Iterator: __IteratorChunkProtocol, ~Copyable, ~Escapable
+    where Iterator.Element: ~Copyable
 
     /// Construct a fresh iterator over this value.
     ///

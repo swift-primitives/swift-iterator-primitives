@@ -68,7 +68,11 @@ public protocol __IteratorChunkProtocol<Element, Failure>: ~Copyable, ~Escapable
     mutating func skip(by maximumOffset: Int) throws(Failure) -> Int
 }
 
-extension __IteratorChunkProtocol where Self: ~Copyable & ~Escapable {
+extension __IteratorChunkProtocol
+where
+    Self: ~Copyable & ~Escapable,
+    Element: ~Copyable
+{
     /// Default `skip(by:)` — drives `next(maximumCount:)` until `maximumOffset` elements are
     /// consumed or the iterator is exhausted (models stdlib `BorrowingSequence.swift:86-96`).
     @inlinable
