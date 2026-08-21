@@ -12,49 +12,42 @@ let package = Package(
         .visionOS(.v27),
     ],
     products: [
-        // MARK: - Namespace
+
         .library(
             name: "Iterator Primitive",
             targets: ["Iterator Primitive"]
         ),
 
-        // MARK: - Protocol
         .library(
             name: "Iterator Protocol",
             targets: ["Iterator Protocol"]
         ),
 
-        // MARK: - Witness
         .library(
             name: "Iterator Witness Primitives",
             targets: ["Iterator Witness Primitives"]
         ),
 
-        // MARK: - Attachable
         .library(
             name: "Iterable",
             targets: ["Iterable"]
         ),
 
-        // MARK: - Concrete Iterators
         .library(
             name: "Iterator Once Primitives",
             targets: ["Iterator Once Primitives"]
         ),
 
-        // MARK: - Bulk tier
         .library(
             name: "Iterator Chunk Primitives",
             targets: ["Iterator Chunk Primitives"]
         ),
 
-        // MARK: - Umbrella
         .library(
             name: "Iterator Primitives",
             targets: ["Iterator Primitives"]
         ),
 
-        // MARK: - Test Support
         .library(
             name: "Iterator Primitives Test Support",
             targets: ["Iterator Primitives Test Support"]
@@ -75,13 +68,12 @@ let package = Package(
         ),
     ],
     targets: [
-        // MARK: - Namespace
+
         .target(
             name: "Iterator Primitive",
             dependencies: []
         ),
 
-        // MARK: - Protocol
         .target(
             name: "Iterator Protocol",
             dependencies: [
@@ -89,7 +81,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Witness
         .target(
             name: "Iterator Witness Primitives",
             dependencies: [
@@ -97,7 +88,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Attachable
         .target(
             name: "Iterable",
             dependencies: [
@@ -108,7 +98,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Concrete Iterators
         .target(
             name: "Iterator Once Primitives",
             dependencies: [
@@ -116,7 +105,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Bulk tier
         .target(
             name: "Iterator Chunk Primitives",
             dependencies: [
@@ -131,7 +119,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Umbrella
         .target(
             name: "Iterator Primitives",
             dependencies: [
@@ -144,7 +131,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Test Support
         .target(
             name: "Iterator Primitives Test Support",
             dependencies: [
@@ -153,7 +139,6 @@ let package = Package(
             path: "Tests/Support"
         ),
 
-        // MARK: - Tests
         .testTarget(
             name: "Iteration Tests",
             dependencies: ["Iterator Primitives Test Support"]

@@ -1,10 +1,5 @@
 import Iterator_Primitives_Test_Support
 
-/// A minimal bulk iterator draining its buffer one element per `next`.
-///
-/// Lends a span that borrows its own storage. Returning at most `maximumCount` (here, at most
-/// one) trivially honors the bound, so it needs no count arithmetic — enough to exercise the
-/// protocol and the derived `next()`.
 private struct DripBulk: Iterator.Chunk.`Protocol` {
     var storage: [Int]
     var pos: Int = 0
@@ -35,8 +30,7 @@ extension `Iterator.Chunk Tests`.Unit {
     func `next yields a borrowed span of the next element`() {
         var iter = DripBulk([10, 20, 30])
         let span = iter.next(maximumCount: Cardinal(4))
-        // Span is ~Escapable; extract Escapable values before #expect (the macro captures its
-        // argument in a closure, which would require Escapable).
+
         let count = span.count
         let first = span[0]
         #expect(count == 1)
@@ -65,8 +59,6 @@ extension `Iterator.Chunk Tests`.Unit {
         let array = [10, 20, 30, 40, 50]
         var iter = Iterator.Chunk(array.span)
 
-        // Each span borrows `iter` (@_lifetime(&self)), so it must die before the next call —
-        // hence the `do` scopes. Extract Escapable values (span is ~Escapable) before asserting.
         do {
             let chunk = iter.next(maximumCount: Cardinal(2))
             let count = chunk.count
@@ -85,7 +77,7 @@ extension `Iterator.Chunk Tests`.Unit {
             #expect(a == 30)
             #expect(b == 40)
         }
-        // The derived scalar next() drains the remainder one element at a time.
+
         #expect(iter.next() == 50)
         #expect(iter.next() == nil)
     }

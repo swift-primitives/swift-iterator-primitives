@@ -1,8 +1,6 @@
 import Iterator_Chunk_Primitives
 import Iterator_Primitives_Test_Support
 
-/// A minimal span-primitive `Iterable` fixture: vends a fresh `Iterator.Chunk` over its stored
-/// values' span each call, so iteration is non-destructive (multipass).
 private struct IntSource: Iterable {
     let values: [Int]
 }

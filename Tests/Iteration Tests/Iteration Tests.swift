@@ -1,11 +1,5 @@
 import Iterator_Primitives_Test_Support
 
-/// A minimal Copyable & Escapable iterator used to exercise type erasure.
-///
-/// Every concrete iterator in the family (`Empty`, `Iterator.Once`) is `~Copyable, ~Escapable`
-/// and so cannot be type-erased through the closure-backed witness (whose source parameter
-/// implicitly requires Copyable + Escapable for closure capture). This stands in for a
-/// consumer-provided Copyable iterator.
 private struct CountingIterator: Iterator.`Protocol` {
     var n: Int
     init(upTo n: Int) { self.n = n }
@@ -65,7 +59,7 @@ extension `Iteration Tests`.`Type Erasure` {
 extension `Iteration Tests`.Repeating {
     @Test
     func `repeating factory yields the element forever`() {
-        // Iterator.repeating(_:) collapses to the witness — repetition requires Copyable.
+
         var iter = Iterator.repeating(7)
         #expect(iter.next() == 7)
         #expect(iter.next() == 7)

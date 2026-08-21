@@ -1,6 +1,5 @@
 import Iterator_Primitives_Test_Support
 
-/// A move-only element exercising the `~Copyable` element support of `Iterator.Once`.
 private struct Token: ~Copyable {
     let id: Int
     init(_ id: Int) { self.id = id }

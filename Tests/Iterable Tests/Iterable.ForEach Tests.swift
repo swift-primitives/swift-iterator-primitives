@@ -1,8 +1,6 @@
 import Iterator_Chunk_Primitives
 import Iterator_Primitives_Test_Support
 
-/// A minimal span-primitive `Iterable` fixture: vends a fresh `Iterator.Chunk` over its stored
-/// values' span each call, so iteration is non-destructive (multipass).
 private struct IntSource: Iterable {
     let values: [Int]
 }
@@ -14,8 +12,6 @@ extension IntSource {
     }
 }
 
-/// A `~Escapable` `Iterable` fixture — a cursor over a borrowed span. This shape is the one the
-/// Property fluent-accessor surface cannot express, because `Property` requires an Escapable base.
 private struct IntCursor: Iterable, ~Escapable {
     let values: Swift.Span<Int>
 
@@ -79,17 +75,7 @@ extension `Iterable ForEach Tests`.Unit {
 }
 
 extension `Iterable ForEach Tests`.`Escapability` {
-    /// The iteration-terminal **surface** guarantee.
-    ///
-    /// The SE-0507 canary that previously lived here has been retired: it asserted that
-    /// `borrow` accessors (`BorrowAndMutateAccessors`) were unavailable, and that gate is gone —
-    /// the feature is enabled by default from Swift 6.4, this package's CI release floor.
-    ///
-    /// Its retirement does not move the surface to the Property fluent-accessor pattern, because
-    /// the binding constraint was never the accessor kind: `Property<Tag, Base>` requires an
-    /// **Escapable** `Base`, while these terminals are declared on `Self: ~Copyable & ~Escapable`
-    /// and must reach `~Escapable` iterables (cursors). This test guards exactly that capability —
-    /// the one a Property surface would take away.
+
     @Test
     func `forEach reaches a ~Escapable iterable`() {
         let values = [1, 2, 3, 4]

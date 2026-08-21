@@ -6,11 +6,6 @@ import Iterator_Primitives_Test_Support
 
 private enum SourceError: Swift.Error { case boom }
 
-/// A fallible **span-primitive** iterator that throws once its cursor reaches `failAt`.
-///
-/// `next(maximumCount:)` yields one element per step over a borrowed span, and throws
-/// `SourceError` once the cursor reaches `failAt`. Yielding one element at a time preserves the
-/// original scalar fixture's `failAt` semantics under the span loop.
 private struct FailingChunk: ~Copyable, ~Escapable {
     @usableFromInline let span: Swift.Span<Int>
     @usableFromInline let failAt: Int
@@ -67,7 +62,7 @@ extension `Iterable ForEach Fallible Tests`.Unit {
         do throws(Either<Never, SourceError>) {
             try source.forEach { seen.append($0) }
         } catch {
-            // error: Either<Never, SourceError> — the fallible overload was selected.
+
             if case .right = error { isRight = true }
         }
         #expect(isRight)
@@ -77,7 +72,7 @@ extension `Iterable ForEach Fallible Tests`.Unit {
     @Test
     func `a body error surfaces as Either.left`() {
         enum Stop: Swift.Error { case now }
-        let source = FailingSource(values: [10, 20, 30], failAt: 99)  // iterator never fails
+        let source = FailingSource(values: [10, 20, 30], failAt: 99)
         var seen: [Int] = []
         var isLeft = false
         do throws(Either<Stop, SourceError>) {
@@ -86,7 +81,7 @@ extension `Iterable ForEach Fallible Tests`.Unit {
                 if element == 20 { throw Stop.now }
             }
         } catch {
-            // error: Either<Stop, SourceError>
+
             if case .left = error { isLeft = true }
         }
         #expect(isLeft)
